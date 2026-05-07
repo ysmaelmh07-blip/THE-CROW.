@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Copa Vuelo Eterno - THE CROW</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Iconos -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+
+        :root {
+            --ff-gold: #ff9d00;
+            --ff-fire: #ff4500;
+            --ff-dark: #080808;
+            --ff-zinc: #18181b;
+        }
+
+        body {
+            background-color: var(--ff-dark);
+            color: white;
+            font-family: 'Rajdhani', sans-serif;
+            scroll-behavior: smooth;
+            overflow-x: hidden;
+        }
+
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+
+        .hero-section {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(8,8,8,1)), 
+                        url('6 may 2026, 04_57_19 p.m..png');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center top;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(90deg, #ff4500, #ff9d00);
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            transition: all 0.3s ease;
+            color: white;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 40px rgba(255, 69, 0, 0.5);
+        }
+
+        .squad-card {
+            background: #111;
+            border: 1px solid rgba(255, 69, 0, 0.1);
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .squad-card:hover {
+            border-color: var(--ff-fire);
+            transform: translateY(-5px);
+        }
+
+        .player-card-modern {
+            background: linear-gradient(135deg, #111 0%, #050505 100%);
+            border-left: 4px solid var(--ff-fire);
+            display: flex;
+            border-radius: 4px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .player-card-modern:hover {
+            border-left-color: #fff;
+            background: #1a1a1a;
+            transform: translateX(10px);
+        }
+
+        .fire-text {
+            background: linear-gradient(to bottom, #fff 20%, #ff9d00 50%, #ff4500 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Biografía de Juego */
+        .bio-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle at center, #1a0a05 0%, #080808 100%);
+            z-index: 200;
+            overflow-y: auto;
+            display: none;
+        }
+
+        .ability-badge {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 69, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-bar-bg {
+            background: rgba(255, 255, 255, 0.1);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .stat-bar-fill {
+            background: linear-gradient(90deg, var(--ff-fire), var(--ff-gold));
+            height: 100%;
+            width: 0%;
+            transition: width 1s ease-out;
+        }
+
+        .hidden-view { display: none; }
+        .view-transition { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <!-- Navegación -->
+    <nav class="fixed w-full z-[100] bg-black/95 border-b-2 border-orange-600/30">
+        <div class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-4 cursor-pointer" onclick="showView('home')">
+                <img src="6 may 2026, 04_57_19 p.m..png" alt="FF Logo" class="h-12 w-auto">
+                <div class="leading-none">
+                    <span class="block font-orbitron font-black text-xl italic tracking-tighter uppercase">COPA <span class="text-orange-600">V. ETERNO</span></span>
+                    <span class="text-[9px] font-bold text-zinc-500 tracking-[.5em] uppercase">Free Fire Competitive</span>
+                </div>
+            </div>
+            <div class="hidden md:flex gap-10 items-center font-bold uppercase text-[12px] tracking-widest">
+                <button onclick="showView('home')" class="hover:text-orange-500 transition border-b-2 border-transparent hover:border-orange-500 pb-1">Inicio</button>
+                <button onclick="showView('teams')" class="hover:text-orange-500 transition border-b-2 border-transparent hover:border-orange-500 pb-1">Mi Equipo</button>
+                <button onclick="showView('stats')" class="hover:text-orange-500 transition border-b-2 border-transparent hover:border-orange-500 pb-1">Puntajes</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- BIOGRAFÍA DE JUEGO (PERFIL DEL JUGADOR) -->
+    <div id="bio-view" class="bio-overlay view-transition">
+        <div class="container mx-auto px-6 py-24 relative min-h-screen flex flex-col items-center">
+            <!-- Botón Cerrar -->
+            <button onclick="closeBio()" class="fixed top-24 right-10 z-50 bg-white/10 hover:bg-orange-600 p-4 rounded-full transition-all group">
+                <i class="fas fa-times text-2xl group-hover:rotate-90 transition-transform"></i>
+            </button>
+
+            <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+                <!-- Lado Izquierdo: Imagen Grande -->
+                <div class="relative group">
+                    <div class="absolute -inset-4 bg-orange-600/20 blur-3xl rounded-full opacity-50 group-hover:opacity-100 transition duration-1000"></div>
+                    <div class="relative border-4 border-orange-600/50 rounded-2xl overflow-hidden aspect-[3/4] bg-black shadow-2xl">
+                        <img id="bio-photo" src="" class="w-full h-full object-cover">
+                        <div id="bio-photo-placeholder" class="hidden w-full h-full flex items-center justify-center text-8xl text-zinc-800">
+                            <i class="fas fa-user-ninja"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lado Derecho: Info -->
+                <div class="space-y-8">
+                    <div>
+                        <span id="bio-role" class="text-orange-600 font-black tracking-[0.4em] uppercase text-sm italic">ROL DEL JUGADOR</span>
+                        <h2 id="bio-nick" class="text-7xl md:text-8xl font-orbitron font-black italic uppercase fire-text leading-none mt-2">NICKNAME</h2>
+                        <p id="bio-realname" class="text-zinc-400 font-bold text-xl uppercase tracking-widest mt-2 border-l-4 border-orange-600 pl-4">NOMBRE REAL</p>
+                    </div>
+
+                    <!-- Estadísticas de Juego -->
+                    <div class="grid grid-cols-3 gap-4">
+                        <div class="bg-zinc-900/50 p-4 rounded border border-white/5 text-center">
+                            <span class="block text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Nivel</span>
+                            <span class="text-2xl font-black italic font-orbitron text-orange-500">70+</span>
+                        </div>
+                        <div class="bg-zinc-900/50 p-4 rounded border border-white/5 text-center">
+                            <span class="block text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Rango</span>
+                            <span class="text-2xl font-black italic font-orbitron text-blue-400">GMA</span>
+                        </div>
+                        <div class="bg-zinc-900/50 p-4 rounded border border-white/5 text-center">
+                            <span class="block text-zinc-500 text-[10px] font-bold uppercase tracking-widest">K/D</span>
+                            <span class="text-2xl font-black italic font-orbitron">4.50</span>
+                        </div>
+                    </div>
+
+                    <!-- Habilidades -->
+                    <div class="space-y-4">
+                        <h4 class="text-xs font-black uppercase tracking-[0.3em] text-white/50 flex items-center gap-2">
+                            <i class="fas fa-bolt text-yellow-500"></i> Habilidades de Combate
+                        </h4>
+                        <div id="bio-skills-container" class="grid grid-cols-2 gap-3"></div>
+                    </div>
+
+                    <!-- Atributos Visuales -->
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-end">
+                            <span class="text-[10px] font-black uppercase tracking-widest text-zinc-500">Impacto en Competitivo</span>
+                            <span class="text-xs font-bold">92%</span>
+                        </div>
+                        <div class="stat-bar-bg"><div class="stat-bar-fill" style="width: 92%"></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- VISTA: HOME -->
+    <main id="view-home" class="view-transition">
+        <section class="hero-section text-center px-6 pt-20">
+            <div class="z-10 max-w-5xl">
+                <img src="6 may 2026, 04_57_19 p.m..png" class="w-64 mx-auto mb-8 drop-shadow-[0_0_50px_rgba(255,69,0,0.6)]">
+                <h1 class="text-6xl md:text-9xl font-orbitron font-black italic mb-4 tracking-tighter uppercase leading-none fire-text">THE CROW</h1>
+                <p class="text-lg md:text-2xl text-orange-200/60 font-bold tracking-[0.5em] mb-12 italic uppercase">Puntos: 0 | Próximamente Inicio</p>
+                <div class="flex flex-col sm:flex-row gap-6 justify-center">
+                    <button onclick="showView('teams')" class="btn-primary italic text-xl px-16 py-5">Ver Roster</button>
+                    <button onclick="showView('stats')" class="bg-white/5 hover:bg-white/10 border border-white/20 italic text-xl px-16 py-5 uppercase font-black transition">Resultados</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- VISTA: ESCUADRAS -->
+    <section id="view-teams" class="hidden-view py-32 container mx-auto px-6 view-transition">
+        <div class="mb-16 border-l-8 border-orange-600 pl-6 text-center md:text-left">
+            <h2 class="text-6xl font-orbitron font-black italic uppercase tracking-tighter">EQUIPO <span class="text-orange-600">PRINCIPAL</span></h2>
+            <p class="text-zinc-500 font-bold uppercase tracking-widest text-sm">Selecciona el equipo para ver los integrantes</p>
+        </div>
+        <div id="teams-grid" class="flex justify-center"></div>
+    </section>
+
+    <!-- VISTA: PUNTOS -->
+    <section id="view-stats" class="hidden-view py-32 container mx-auto px-6 view-transition">
+        <div class="flex justify-between items-end mb-16 border-b border-orange-600/30 pb-4">
+            <h2 class="text-6xl font-orbitron font-black italic uppercase tracking-tighter">TABLA DE <span class="text-orange-600">POSICIONES</span></h2>
+        </div>
+        <div class="bg-black/40 p-1 border border-white/5 rounded">
+            <div class="overflow-x-auto">
+                <table class="stats-table w-full border-separate border-spacing-y-2">
+                    <thead>
+                        <tr class="text-orange-600 text-left text-[11px] uppercase tracking-[0.3em] font-black">
+                            <th class="p-6"># Pos</th>
+                            <th class="p-6">Equipo</th>
+                            <th class="p-6">Kills</th>
+                            <th class="p-6">Booyahs</th>
+                            <th class="p-6">Puntos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leaderboard-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <!-- VISTA: DETALLE DE EQUIPO -->
+    <section id="view-team-details" class="hidden-view py-32 container mx-auto px-6 view-transition">
+        <div class="mb-16 flex flex-col md:flex-row items-center gap-12 p-8 bg-gradient-to-r from-orange-950/20 to-transparent border border-orange-600/20">
+            <div class="w-48 h-48 rounded border-4 border-orange-600 shadow-[0_0_30px_rgba(255,69,0,0.3)] overflow-hidden">
+                <img id="detail-team-logo" src="" class="w-full h-full object-cover">
+            </div>
+            <div class="text-center md:text-left">
+                <button onclick="showView('teams')" class="text-orange-600 mb-6 hover:text-white flex items-center gap-2 uppercase font-black text-xs tracking-widest transition">
+                    <i class="fas fa-chevron-left"></i> Volver a Equipos
+                </button>
+                <h2 id="detail-team-name" class="text-7xl font-orbitron font-black italic uppercase leading-none fire-text">NOMBRE</h2>
+                <p class="text-zinc-400 font-bold uppercase tracking-widest text-sm mt-4 italic">Selecciona un jugador para ver su Biografía de Juego</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-6xl mx-auto" id="roster-container"></div>
+    </section>
+
+    <script>
+        const squads = [
+            { id: 'the-crow', name: 'THE CROW', logo: 'logo de scuad.jpeg', kills: 0, booyahs: 0, points: 0 }
+        ];
+
+        const mainTeamPlayers = [
+            { 
+                id: 1,
+                nick: 'KILLER', 
+                name: 'Beckham Laura', 
+                role: 'Granadero', 
+                photo: 'ChatGPT Image 6 may 2026, 05_02_10 p.m..png',
+                skills: ['Alok', 'Álvaro (R)', 'Kelly', 'Moco']
+            },
+            { 
+                id: 2,
+                nick: 'DEADLYSHOT', 
+                name: 'Pool Munive', 
+                role: 'L2 / IGL', 
+                photo: 'ChatGPT Image 6 may 2026, 06_33_47 p.m..png',
+                skills: ['Tatsuya', 'Andrew', 'Kelly', 'Jota']
+            },
+            { 
+                id: 3,
+                nick: 'TRUE', 
+                name: 'Max Josué', 
+                role: 'Soporte', 
+                photo: 'ChatGPT Image 6 may 2026, 06_52_44 p.m..png',
+                skills: ['Skyler', 'Rafael', 'Maro', 'Laura']
+            },
+            { 
+                id: 4,
+                nick: 'YISMA', 
+                name: 'Ysmael Marcos', 
+                role: 'Rusher L1', 
+                photo: 'yo  po.jpeg',
+                skills: ['Orion', 'Miguel', 'Sonia', 'Luqueta']
+            },
+            { 
+                id: 5,
+                nick: 'FLORES', 
+                name: 'Flores', 
+                role: 'Rusher', 
+                photo: null,
+                skills: ['K', 'Miguel', 'Kelly', 'Wolfrahh']
+            },
+            { 
+                id: 6,
+                nick: 'MALLORCA', 
+                name: 'Mallorca', 
+                role: 'Soporte', 
+                photo: null,
+                skills: ['Iris', 'Moco', 'Laura', 'Rafael']
+            }
+        ];
+
+        function loadTeams() {
+            const grid = document.getElementById('teams-grid');
+            grid.innerHTML = squads.map(s => `
+                <div onclick="showTeamDetails('${s.id}')" class="squad-card group w-full max-w-sm">
+                    <div class="h-48 overflow-hidden bg-black">
+                        <img src="${s.logo}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+                    <div class="p-6 border-t border-white/5 text-center">
+                        <h3 class="font-orbitron font-black text-2xl italic group-hover:text-orange-500 transition uppercase">${s.name}</h3>
+                        <p class="text-[10px] text-zinc-600 tracking-widest font-black uppercase mt-1 italic">Ver Roster</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadStats() {
+            const body = document.getElementById('leaderboard-body');
+            body.innerHTML = squads.map((s, index) => `
+                <tr class="opacity-40">
+                    <td class="p-6 font-black text-2xl italic text-zinc-600">-</td>
+                    <td class="p-6">
+                        <div class="flex items-center gap-4">
+                            <img src="${s.logo}" class="w-12 h-12 rounded border border-white/10 object-cover">
+                            <span class="font-black font-orbitron italic tracking-tighter text-lg uppercase">${s.name}</span>
+                        </div>
+                    </td>
+                    <td class="p-6 text-zinc-600 font-bold">${s.kills}</td>
+                    <td class="p-6 text-zinc-600 font-bold">${s.booyahs}</td>
+                    <td class="p-6 font-black text-zinc-600 text-2xl italic tracking-tighter">${s.points}</td>
+                </tr>
+            `).join('');
+        }
+
+        function openBio(playerId) {
+            const player = mainTeamPlayers.find(p => p.id === playerId);
+            if (!player) return;
+
+            document.getElementById('bio-nick').innerText = player.nick;
+            document.getElementById('bio-realname').innerText = player.name;
+            document.getElementById('bio-role').innerText = player.role;
+            
+            const bioImg = document.getElementById('bio-photo');
+            const bioPlaceholder = document.getElementById('bio-photo-placeholder');
+            
+            if (player.photo) {
+                bioImg.src = player.photo;
+                bioImg.style.display = 'block';
+                bioPlaceholder.style.display = 'none';
+            } else {
+                bioImg.style.display = 'none';
+                bioPlaceholder.style.display = 'flex';
+            }
+
+            const skillsContainer = document.getElementById('bio-skills-container');
+            skillsContainer.innerHTML = player.skills.map((s, idx) => `
+                <div class="ability-badge ${idx === 0 ? 'border-orange-500 bg-orange-600/10' : ''}">
+                    <span class="block text-[9px] uppercase font-black text-zinc-500 mb-1 tracking-widest">${idx === 0 ? 'Activa' : 'Pasiva'}</span>
+                    <span class="text-sm font-black italic uppercase">${s}</span>
+                </div>
+            `).join('');
+
+            document.getElementById('bio-view').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeBio() {
+            document.getElementById('bio-view').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function showTeamDetails(id) {
+            const squad = squads.find(s => s.id === id);
+            
+            document.getElementById('detail-team-logo').src = squad.logo;
+            document.getElementById('detail-team-name').innerText = squad.name;
+            
+            const container = document.getElementById('roster-container');
+            container.innerHTML = mainTeamPlayers.map(p => `
+                <div class="player-card-modern group" onclick="openBio(${p.id})">
+                    <div class="w-32 h-32 bg-black flex items-center justify-center border-r border-white/5 overflow-hidden">
+                        ${p.photo ? `<img src="${p.photo}" class="w-full h-full object-cover transition duration-500 group-hover:scale-110">` : `<i class="fas fa-user-ninja text-4xl text-zinc-800"></i>`}
+                    </div>
+                    <div class="p-5 flex-grow flex flex-col justify-center relative">
+                        <span class="text-[10px] font-black uppercase tracking-widest text-orange-600">${p.role}</span>
+                        <h4 class="text-3xl font-black font-orbitron italic leading-none mb-1 group-hover:text-orange-500 transition uppercase">${p.nick}</h4>
+                        <p class="text-zinc-500 text-[11px] font-bold uppercase tracking-widest">${p.name}</p>
+                    </div>
+                </div>
+            `).join('');
+
+            showView('team-details');
+        }
+
+        function showView(name) {
+            ['home', 'teams', 'stats', 'team-details'].forEach(v => {
+                document.getElementById('view-' + v).classList.add('hidden-view');
+            });
+            document.getElementById('view-' + name).classList.remove('hidden-view');
+            window.scrollTo(0,0);
+        }
+
+        window.onload = () => {
+            loadTeams();
+            loadStats();
+        };
+    </script>
+</body>
+</html>
