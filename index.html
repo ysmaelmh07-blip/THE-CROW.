@@ -530,6 +530,127 @@
   .social-card.is-pending .social-handle{
     color:var(--muted-2);
   }
+
+  /* ---------- JOIN MODAL / FORM ---------- */
+  .modal-overlay{
+    position:fixed; inset:0;
+    z-index:200;
+    background:rgba(4,5,6,0.82);
+    backdrop-filter:blur(6px);
+    display:none;
+    align-items:flex-start;
+    justify-content:center;
+    padding:80px 20px 40px;
+    overflow-y:auto;
+  }
+  .modal-overlay.is-open{ display:flex; }
+
+  .modal-box{
+    position:relative;
+    width:100%;
+    max-width:520px;
+    background:var(--panel);
+    border:1px solid rgba(47,208,255,0.25);
+    box-shadow:0 30px 80px rgba(0,0,0,0.5), 0 0 60px rgba(47,208,255,0.06);
+    padding:40px 32px 36px;
+    animation: modalIn 0.35s ease;
+  }
+  @keyframes modalIn{
+    from{ opacity:0; transform:translateY(16px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+
+  .modal-close{
+    position:absolute;
+    top:16px; right:16px;
+    width:34px; height:34px;
+    border:1px solid var(--line);
+    background:transparent;
+    color:var(--muted);
+    font-size:1.3rem;
+    line-height:1;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    transition:border-color 0.25s ease, color 0.25s ease;
+  }
+  .modal-close:hover{ border-color:var(--blue); color:var(--blue); }
+
+  .modal-title{
+    font-size:2.2rem;
+    margin-top:8px;
+    color:var(--ink);
+    text-transform:none;
+  }
+  .modal-sub{
+    color:var(--muted);
+    font-size:0.95rem;
+    margin-top:10px;
+    line-height:1.5;
+  }
+
+  #joinForm{
+    margin-top:28px;
+    display:flex;
+    flex-direction:column;
+    gap:18px;
+  }
+  #joinForm label{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    font-family:'Space Mono', monospace;
+    font-size:0.7rem;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  #joinForm input,
+  #joinForm select{
+    background:var(--void);
+    border:1px solid var(--line);
+    color:var(--ink);
+    padding:13px 14px;
+    font-family:'Rajdhani', sans-serif;
+    font-size:1.05rem;
+    font-weight:500;
+    border-radius:2px;
+    outline:none;
+    transition:border-color 0.25s ease;
+  }
+  #joinForm input::placeholder{ color:var(--muted-2); }
+  #joinForm input:focus,
+  #joinForm select:focus{ border-color:var(--blue); }
+  #joinForm select{ appearance:none; cursor:pointer; }
+  #joinForm select option{ background:var(--panel); color:var(--ink); }
+
+  .form-submit{
+    margin-top:6px;
+    width:100%;
+    justify-content:center;
+    border:none;
+    font-family:'Space Mono', monospace;
+  }
+
+  #modalStepResult canvas{
+    width:100%;
+    height:auto;
+    display:block;
+    background:var(--void);
+  }
+  .result-actions{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:20px;
+  }
+  .result-note{
+    margin-top:16px;
+    font-family:'Space Mono', monospace;
+    font-size:0.72rem;
+    color:var(--muted-2);
+    letter-spacing:0.04em;
+    line-height:1.6;
+  }
 </style>
 </head>
 <body>
@@ -537,7 +658,7 @@
 <header class="nav">
   <div class="nav-inner">
     <div class="nav-brand">
-      <img src="data:image/jpeg;base64,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" alt="Logo THE CROW">
+      <img id="navLogoImg" src="data:image/jpeg;base64,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" alt="Logo THE CROW" crossorigin="anonymous">
       THE CROW
     </div>
     <nav class="nav-links">
@@ -569,7 +690,7 @@
   <p class="hero-tagline">Cazamos en la niebla. Cinco jugadores, un solo objetivo: la última zona.</p>
 
   <div class="hero-cta">
-    <a href="https://chat.whatsapp.com/LuVyevCFerPBVhQ3ecrv30?s=cl&p=a&ilr=1" target="_blank" rel="noopener" class="btn btn-solid">Unirme al clan</a>
+    <a href="https://chat.whatsapp.com/LuVyevCFerPBVhQ3ecrv30?s=cl&p=a&ilr=1" target="_blank" rel="noopener" class="btn btn-solid js-join-trigger">Unirme al clan</a>
     <a href="#integrantes" class="btn btn-ghost">Ver integrantes</a>
   </div>
 
@@ -665,9 +786,12 @@
       <div class="enlist-left">
         <span class="status-pill"><span class="status-dot"></span>Inscripciones abiertas</span>
         <h2>Súmate a la cacería</h2>
-        <p>THE CROW está reclutando jugadores para el escuadrón. Entra al grupo de WhatsApp para conocer los requisitos y coordinar tu ingreso.</p>
+        <p>THE CROW está reclutando jugadores para el escuadrón. Entra al grupo de WhatsApp o al servidor de Discord para conocer los requisitos y coordinar tu ingreso.</p>
       </div>
-      <a href="https://chat.whatsapp.com/LuVyevCFerPBVhQ3ecrv30?s=cl&p=a&ilr=1" target="_blank" rel="noopener" class="btn btn-solid">Entrar al grupo</a>
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <a href="https://chat.whatsapp.com/LuVyevCFerPBVhQ3ecrv30?s=cl&p=a&ilr=1" target="_blank" rel="noopener" class="btn btn-solid js-join-trigger">Entrar por WhatsApp</a>
+        <a href="https://discord.gg/uB7Dv8b6H" target="_blank" rel="noopener" class="btn btn-ghost">Entrar por Discord</a>
+      </div>
     </div>
   </div>
 </section>
@@ -688,13 +812,13 @@
     </div>
 
     <div class="social-grid reveal">
-      <div class="social-card is-pending">
+      <a class="social-card" href="https://www.tiktok.com/@the.crow4878?_r=1&_t=ZS-993QvAUduIi" target="_blank" rel="noopener">
         <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M16.6 5.82s.51.5 0 0A4.278 4.278 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 1 1-2.59-2.59c.26 0 .5.05.75.12v-3.14a5.7 5.7 0 0 0-.75-.05A5.75 5.75 0 1 0 15.61 15.5V9.11a7.34 7.34 0 0 0 4.29 1.37V7.4a4.27 4.27 0 0 1-3.3-1.58z"/></svg>
         <div>
           <div class="social-name">TikTok</div>
-          <div class="social-handle">Cuenta aún no creada</div>
+          <div class="social-handle">@the.crow4878</div>
         </div>
-      </div>
+      </a>
       <div class="social-card is-pending">
         <svg class="social-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.3" cy="6.7" r="1"/></svg>
         <div>
@@ -702,6 +826,13 @@
           <div class="social-handle">Cuenta aún no creada</div>
         </div>
       </div>
+      <a class="social-card" href="https://discord.gg/uB7Dv8b6H" target="_blank" rel="noopener">
+        <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M20.3 5.4A17.5 17.5 0 0 0 15.9 4c-.2.35-.42.82-.58 1.18a16.2 16.2 0 0 0-4.63 0A9.6 9.6 0 0 0 10.1 4a17.5 17.5 0 0 0-4.4 1.4C2.9 9.3 2.2 13 2.5 16.7a17.6 17.6 0 0 0 5.3 2.7c.43-.58.82-1.2 1.15-1.86-.63-.24-1.23-.53-1.8-.88.15-.11.3-.23.44-.35a12.6 12.6 0 0 0 10.8 0c.15.12.29.24.44.35-.57.35-1.17.64-1.8.88.33.66.72 1.28 1.15 1.86a17.5 17.5 0 0 0 5.3-2.7c.36-4.3-.73-7.96-3.18-11.3zM9.7 14.4c-.98 0-1.78-.9-1.78-2s.79-2 1.78-2c1 0 1.8.91 1.78 2 0 1.1-.79 2-1.78 2zm5.6 0c-.98 0-1.78-.9-1.78-2s.79-2 1.78-2c1 0 1.8.91 1.78 2 0 1.1-.78 2-1.78 2z"/></svg>
+        <div>
+          <div class="social-name">Discord</div>
+          <div class="social-handle">Servidor del clan</div>
+        </div>
+      </a>
       <a class="social-card" href="https://chat.whatsapp.com/LuVyevCFerPBVhQ3ecrv30?s=cl&p=a&ilr=1" target="_blank" rel="noopener">
         <svg class="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 0 0-8.5 15.2L2 22l4.9-1.5A10 10 0 1 0 12 2zm5.3 14.2c-.2.6-1.3 1.2-1.8 1.2-.5.1-1 .1-3.2-.7-2.7-1.1-4.4-3.8-4.6-4-.1-.2-1.1-1.4-1.1-2.7 0-1.3.7-1.9.9-2.2.2-.2.5-.3.7-.3h.5c.2 0 .4 0 .6.5.2.6.7 1.9.8 2 .1.2.1.4 0 .6-.1.2-.2.3-.3.5-.2.2-.3.3-.5.5-.2.2-.3.4-.1.7.2.3.8 1.3 1.7 2.1 1.2 1.1 2.2 1.4 2.5 1.6.3.2.5.1.7-.1.2-.2.8-.9 1-1.2.2-.3.4-.2.7-.1.3.1 1.7.8 2 1 .3.1.5.2.5.4.1.3.1.7-.1 1.2z"/></svg>
         <div>
@@ -719,6 +850,56 @@
   <div class="foot-meta">Clan de Free Fire</div>
 </footer>
 
+<!-- ================= MODAL: FORMULARIO DE INGRESO ================= -->
+<div class="modal-overlay" id="joinModal">
+  <div class="modal-box">
+    <button class="modal-close" id="modalClose" aria-label="Cerrar">&times;</button>
+
+    <div id="modalStepForm">
+      <div class="eyebrow">Antes de unirte</div>
+      <h3 class="modal-title">Reciba un cordial saludo de THE CROW</h3>
+      <p class="modal-sub">Completa este formulario para generar tu ficha de ingreso. Al final la descargas como imagen y la envías al grupo para terminar tu inscripción.</p>
+
+      <form id="joinForm">
+        <label>Nombre
+          <input type="text" name="nombre" required placeholder="Tu nombre o gamertag">
+        </label>
+        <label>País
+          <input type="text" name="pais" required placeholder="Ej. Perú">
+        </label>
+        <label>Tiempo disponible
+          <input type="text" name="tiempo" required placeholder="Ej. Tardes y fines de semana">
+        </label>
+        <label>Rol
+          <select name="rol" required>
+            <option value="" disabled selected>Selecciona tu rol</option>
+            <option>L1</option>
+            <option>L2</option>
+            <option>Soporte</option>
+            <option>Granadero</option>
+            <option>Flex</option>
+          </select>
+        </label>
+        <button type="submit" class="btn btn-solid form-submit">Generar mi ficha</button>
+      </form>
+    </div>
+
+    <div id="modalStepResult" style="display:none;">
+      <div class="eyebrow">Ficha lista</div>
+      <h3 class="modal-title">Ya casi eres parte del clan</h3>
+      <p class="modal-sub">Descarga esta imagen y envíala al grupo de WhatsApp. Con eso queda completa tu inscripción.</p>
+
+      <canvas id="cardCanvas" width="1000" height="600"></canvas>
+
+      <div class="result-actions">
+        <a id="downloadCard" class="btn btn-solid" download="ficha-the-crow.png">Descargar imagen</a>
+        <a href="https://chat.whatsapp.com/LuVyevCFerPBVhQ3ecrv30?s=cl&p=a&ilr=1" target="_blank" rel="noopener" class="btn btn-ghost">Unirme al grupo</a>
+      </div>
+      <p class="result-note">1. Descarga la imagen &nbsp;·&nbsp; 2. Entra al grupo &nbsp;·&nbsp; 3. Envíala ahí para confirmar tu ingreso</p>
+    </div>
+  </div>
+</div>
+
 <script>
   const observer = new IntersectionObserver((entries)=>{
     entries.forEach(entry=>{
@@ -729,6 +910,135 @@
     });
   }, { threshold:0.15 });
   document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+  // ---------- MODAL DE INGRESO ----------
+  const joinModal = document.getElementById('joinModal');
+  const modalClose = document.getElementById('modalClose');
+  const modalStepForm = document.getElementById('modalStepForm');
+  const modalStepResult = document.getElementById('modalStepResult');
+  const joinForm = document.getElementById('joinForm');
+
+  function openJoinModal(){
+    joinModal.classList.add('is-open');
+    modalStepForm.style.display = 'block';
+    modalStepResult.style.display = 'none';
+    joinForm.reset();
+    document.body.style.overflow = 'hidden';
+  }
+  function closeJoinModal(){
+    joinModal.classList.remove('is-open');
+    document.body.style.overflow = '';
+  }
+
+  document.querySelectorAll('.js-join-trigger').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      e.preventDefault();
+      openJoinModal();
+    });
+  });
+  modalClose.addEventListener('click', closeJoinModal);
+  joinModal.addEventListener('click', (e)=>{
+    if(e.target === joinModal) closeJoinModal();
+  });
+  document.addEventListener('keydown', (e)=>{
+    if(e.key === 'Escape' && joinModal.classList.contains('is-open')) closeJoinModal();
+  });
+
+  joinForm.addEventListener('submit', async (e)=>{
+    e.preventDefault();
+    const data = {
+      nombre: joinForm.nombre.value.trim(),
+      pais: joinForm.pais.value.trim(),
+      tiempo: joinForm.tiempo.value.trim(),
+      rol: joinForm.rol.value
+    };
+    await drawJoinCard(data);
+    modalStepForm.style.display = 'none';
+    modalStepResult.style.display = 'block';
+  });
+
+  async function drawJoinCard(data){
+    if(document.fonts && document.fonts.ready){ await document.fonts.ready; }
+
+    const canvas = document.getElementById('cardCanvas');
+    const ctx = canvas.getContext('2d');
+    const W = canvas.width, H = canvas.height;
+
+    ctx.clearRect(0,0,W,H);
+    ctx.fillStyle = '#07080a';
+    ctx.fillRect(0,0,W,H);
+
+    const glow = ctx.createRadialGradient(W/2, H*0.28, 40, W/2, H*0.28, 520);
+    glow.addColorStop(0, 'rgba(47,208,255,0.18)');
+    glow.addColorStop(1, 'rgba(7,8,10,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0,0,W,H);
+
+    ctx.strokeStyle = 'rgba(47,208,255,0.4)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(12,12,W-24,H-24);
+
+    const logoImg = document.getElementById('navLogoImg');
+    try{
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(W/2, 130, 66, 0, Math.PI*2);
+      ctx.closePath();
+      ctx.clip();
+      ctx.drawImage(logoImg, W/2-66, 64, 132, 132);
+      ctx.restore();
+      ctx.strokeStyle = '#2fd0ff';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(W/2, 130, 66, 0, Math.PI*2);
+      ctx.stroke();
+    }catch(err){ /* si la imagen no carga, se omite sin romper la ficha */ }
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#e8edf3';
+    ctx.font = '600 66px Teko, sans-serif';
+    ctx.fillText('THE CROW', W/2, 250);
+
+    ctx.font = '400 20px "Space Mono", monospace';
+    ctx.fillStyle = '#2fd0ff';
+    ctx.fillText('FICHA DE INGRESO', W/2, 282);
+
+    ctx.strokeStyle = 'rgba(47,208,255,0.35)';
+    ctx.beginPath();
+    ctx.moveTo(90, 308);
+    ctx.lineTo(W-90, 308);
+    ctx.stroke();
+
+    const fields = [
+      ['NOMBRE', data.nombre || '—'],
+      ['PAÍS', data.pais || '—'],
+      ['DISPONIBILIDAD', data.tiempo || '—'],
+      ['ROL', data.rol || '—']
+    ];
+    ctx.textAlign = 'left';
+    let y = 370;
+    fields.forEach(([label, val])=>{
+      ctx.font = '400 18px "Space Mono", monospace';
+      ctx.fillStyle = '#7c8794';
+      ctx.fillText(label, 90, y);
+      ctx.font = '600 34px Rajdhani, sans-serif';
+      ctx.fillStyle = '#e8edf3';
+      ctx.fillText(val, 90, y + 34);
+      y += 62;
+    });
+
+    const dateStr = new Date().toLocaleDateString('es-PE', { day:'2-digit', month:'2-digit', year:'numeric' });
+    ctx.font = '400 16px "Space Mono", monospace';
+    ctx.fillStyle = '#4d565f';
+    ctx.textAlign = 'left';
+    ctx.fillText('Cazamos en la niebla', 90, H-40);
+    ctx.textAlign = 'right';
+    ctx.fillText('Generado: ' + dateStr, W-90, H-40);
+
+    const dataUrl = canvas.toDataURL('image/png');
+    const downloadLink = document.getElementById('downloadCard');
+    downloadLink.href = dataUrl;
+  }
 </script>
 
 </body>
